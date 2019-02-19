@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>The squeakety-geekery weekety-eight sweepety-speakery-sweepety-stake</title>
+		<meta name="description" content="Sweepstake betting page">
+	</head>
+	<body>
+		<div class="container-fluid">
+			<div class="row clearfix pt-10">
+				<div class="container bg-yellow" id="wrapper-content">
+					<div class="row clearfix">
+						<div class="col-md-8 col-md-offset-2 text-center logo">
+							<img src="./img/logo.png" class="center-block img-responsive">
+						</div>
+					</div>
+					<div class="row clearfix">
+						<div class="col-md-12 text-center">
+						<h1 class="font-green"><strong>SWEEEEP!</strong></h1>
+						</div>
+					</div>
+					<div class="row clearfix">
+						<div class="col-md-12 text-center">
+						<h3>Your Ethereum account is:</h3>
+						<h3 class="font-green"><strong id="address">
+										<input type="text" name="user_eth_address" id="user_eth_address"></strong></h3>
+						<p>&nbsp;</p>
+						<p>Our contract chairperson (probably Patrick McCorry) will call the payout function in week 8, when the identity of the speaker is public.</p>
+						<p>All funds received by this contract up until then will be shared between those who bet on the correct speaker</p>
+						<p>Winnings will be shared proportionally, so that </p>
+						<p>Your winnings will be repaid to THIS account.</p>
+						<p>Warning:</p>
+						<p>Blockchains cannot protect against all forms of cheating. That is a job for how humans choose to organise socially - Participants betting with insider knowledge will be publicly shamed!</p>
+
+						</div>
+						<div class="col-md-12">
+							<form action="/do_bet" method="post">
+								<div id="speakers" class="form-group row clearfix">
+									<div class="col-md-4 col-sm-6">
+										<label>Speakers</label>
+									</div>
+								</div>
+								<div class="form-group row clearfix">
+									<div class="col-md-4 col-sm-6">
+										<label>Amount staked (Finney / milliETH)</label>
+									</div>
+									<div class="col-md-8 col-sm-6">
+										<input  id="amount" type="text" class="form-control number-only" name="amount" placeholder="e.g. 25 Finney ~= £2.80">
+									</div>
+								</div>
+								<div class="form-group row clearfix">
+									<div class="col-md-4 col-sm-6">
+										<label>Your name / handle</label>
+									</div>
+									<div class="col-md-8 col-sm-6">
+										<input id="user" type="text" class="form-control" value="" name="user" placeholder="to whom should we make the ETH payable?">
+									</div>
+								</div>
+								<div class="form-group row clearfix">
+									<div class="col-md-12 col-sm-12 text-center">
+										<p>&nbsp;</p>
+										<button type="button" id="bet" class="btn btn-success btn-lg">PLACE YOUR BET</button>
+										<p>&nbsp;</p>
+									</div>
+								</div>
+
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js/dist/web3.min.js"></script>
+		<script src="./scripts.js"></script>
+	</body>
+</html>
