@@ -220,19 +220,17 @@ function populate (speakers, startIndex, speakerBalances) {
   const speakersDiv = document.getElementById('speakers');
 
   speakers.forEach ((speaker, idx)=> {
-    console.log(speaker);
     const div=document.createElement ('div');
     const radio=document.createElement ('input');
     const text=document.createTextNode(speaker);
     radio.setAttribute('type', 'radio');
     radio.setAttribute('name', 'speaker');
-    radio.setAttribute('value', idx+startIndex);
-    radio.setAttribute('id', 'speaker '+idx+startIndex);
+    radio.setAttribute('value', (idx+startIndex));
+    radio.setAttribute('id', 'speaker '+(idx+startIndex));
     radio.setAttribute('class', 'form-control');
     speakersDiv.appendChild (radio);
     speakersDiv.appendChild (text);
-    console.log(document.getElementById('speaker '+idx+startIndex));
-    document.getElementById('speaker '+idx+startIndex).classList.remove("hidden");
+    document.getElementById('speaker '+(idx+startIndex)).classList.remove("hidden");
 
   });
 };
