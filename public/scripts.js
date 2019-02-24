@@ -1,7 +1,8 @@
 
 var contract;
-const contract_address = '0x'
+const contract_address = '0x';
 const abi = {};
+var user_address = '0x';
 var baseTx = {
       gasPrice: "21000000000",
       gas: "85000",
@@ -19,47 +20,53 @@ var baseTx = {
 			web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
 		}
 
-		// Check the connection
-		if(!web3.isConnected()) {
-			console.error("Not connected");
-		}
+    web3.eth.net.isListening().then(ready => {
+      if (ready) {
+    		web3.eth.getAccounts()
+        .then (accounts=> {
+          console.log(accounts);
+          account = accounts[0];
+      		document.getElementById("user_eth_address").value = account;
+      		var accountInterval = setInterval(function() {
+      			if (web3.eth.accounts[0] !== account)
+      			{
+      				account = web3.eth.accounts[0];
+      				if(account)
+      				{
+      					web3.version.getNetwork((err, netId) => {
+      						if(netId == 1)
+      						{
+      							//window.location = 'index.html';
+      							document.getElementById("address").innerHTML = account;
+      							document.getElementById("borrower_eth_address").value = account;
+      						}
+      						else
+      						{
+      							window.location = 'index.html';
+      						}
+      					})
+      				}
+      				else
+      				{
+      					//window.location = 'index.html';
+      				}
+    			}
+    		}, 100);
 
-		var account = web3.eth.accounts[0];
-		document.getElementById("address").innerHTML = account;
-		document.getElementById("borrower_eth_address").value = account;
-		var accountInterval = setInterval(function() {
-			if (web3.eth.accounts[0] !== account)
-			{
-				account = web3.eth.accounts[0];
-				if(account)
-				{
-					web3.version.getNetwork((err, netId) => {
-						if(netId == 1)
-						{
-							//window.location = 'index.html';
-							document.getElementById("address").innerHTML = account;
-							document.getElementById("borrower_eth_address").value = account;
-						}
-						else
-						{
-							window.location = 'index.html';
-						}
-					})
-				}
-				else
-				{
-					//window.location = 'index.html';
-				}
-			}
-		}, 100);
+        web3.eth.getAccounts(function(err, accounts){
+        	if (accounts.length == '') window.location = 'index.html';
+        });
 
-    web3.eth.getAccounts(function(err, accounts){
-    	if (accounts.length == '') window.location = 'index.html';
+        baseTx.from= web3.eth.accounts[0];
+
+        populate()
+
+      })} else {
+        console.log('Fell over :(');
+      }
+
     });
 
-    baseTx.from= web3.eth.accounts[0];
-
-    populate()
 
 
 };
@@ -160,7 +167,11 @@ function getSpeakers (contract) {
 
 document.getElementById('bet').addEventListener ('click', doSubmit)
 
-window.addEventListener('load', ()=>populate());
+window.addEventListener('load', ()=>{
+  doTheWeb3();
+  populate();
+  populateUserAccount();
+});
 
 // 	$(function()
 // 	{
@@ -173,6 +184,15 @@ window.addEventListener('load', ()=>populate());
 // });
 
 
+
+function populateUserAccount () {
+  const foundAddresses = web3.eth.accounts[0];
+  console.log('foundAddresses',foundAddresses);
+	if (foundAddresses && foundAddresses.length) {
+    user_address = foundAddresses[0];
+    getElementById ('user_eth_address').setAttribute('value', user_address);
+  };
+};
 
 function populate (speakers, startIndex, speakerBalances) {
   console.log('called populate with', speakers);
