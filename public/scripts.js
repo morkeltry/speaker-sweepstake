@@ -29,9 +29,10 @@ const doTheWeb3 = function() {
     if (ready) {
   		web3.eth.getAccounts()
       .then (accounts=> {
-        console.log(accounts);
-        account = accounts[0];
-    		document.getElementById("user_eth_address").value = account;
+        populateUserAccount(accounts);
+
+        ///extraneous code!!!
+        let account = accounts[0]
     		var accountInterval = setInterval(function() {
     			if (web3.eth.accounts[0] !== account)
     			{
@@ -41,9 +42,7 @@ const doTheWeb3 = function() {
     					web3.version.getNetwork((err, netId) => {
     						if(netId == 1)
     						{
-    							//window.location = 'index.html';
-    							document.getElementById("address").innerHTML = account;
-    							document.getElementById("borrower_eth_address").value = account;
+                  // do, eg, populate
     						}
     						else
     						{
@@ -186,7 +185,10 @@ document.getElementById('bet').addEventListener ('click', doSubmit)
 
 window.addEventListener('load', ()=>{
   doTheWeb3();
-  populate();
+  //populate currently also in doTheWeb3
+  // populate();
+
+  //populateUserAccount also currently also in doTheWeb3
   populateUserAccount();
 });
 
@@ -202,12 +204,13 @@ window.addEventListener('load', ()=>{
 
 
 
-function populateUserAccount () {
-  const foundAddresses = web3.eth.accounts[0];
-  console.log('foundAddresses',foundAddresses);
-	if (foundAddresses && foundAddresses.length) {
-    user_address = foundAddresses[0];
-    getElementById ('user_eth_address').setAttribute('value', user_address);
+function populateUserAccount (accounts) {
+	if (accounts && accounts.length) {
+    user_address = accounts[0];
+    console.log('will add : ', user_address);
+    document.getElementById ('user_eth_address').setAttribute('value', user_address);
+  } else {
+    console.log('Hmmm... no account :(');
   };
 };
 
