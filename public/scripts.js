@@ -1,7 +1,7 @@
 
 var contract;
 const contract_address = '0x';
-const abi = {};
+let abi;
 var user_address = '0x';
 var baseTx = {
       gasPrice: "21000000000",
@@ -10,66 +10,83 @@ var baseTx = {
       value: 1000000000000000
     };
 
-  const doTheWeb3 = function() {
-		// Load WEB3
-		// Check wether it's already injected by something else (like Metamask or Parity Chrome plugin)
-		if(typeof web3 !== 'undefined') {
-			web3 = new Web3(web3.currentProvider);
-		// Or connect to a node
-		} else {
-			web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
-		}
+loadJSON( 'abi.json', function(response) {
+  abi = JSON.parse(response);
+  console.log(abi);
+ });
 
-    web3.eth.net.isListening().then(ready => {
-      if (ready) {
-    		web3.eth.getAccounts()
-        .then (accounts=> {
-          console.log(accounts);
-          account = accounts[0];
-      		document.getElementById("user_eth_address").value = account;
-      		var accountInterval = setInterval(function() {
-      			if (web3.eth.accounts[0] !== account)
-      			{
-      				account = web3.eth.accounts[0];
-      				if(account)
-      				{
-      					web3.version.getNetwork((err, netId) => {
-      						if(netId == 1)
-      						{
-      							//window.location = 'index.html';
-      							document.getElementById("address").innerHTML = account;
-      							document.getElementById("borrower_eth_address").value = account;
-      						}
-      						else
-      						{
-      							window.location = 'index.html';
-      						}
-      					})
-      				}
-      				else
-      				{
-      					//window.location = 'index.html';
-      				}
-    			}
-    		}, 100);
+const doTheWeb3 = function() {
+	// Load WEB3
+	// Check wether it's already injected by something else (like Metamask or Parity Chrome plugin)
+	if(typeof web3 !== 'undefined') {
+		web3 = new Web3(web3.currentProvider);
+	// Or connect to a node
+	} else {
+		web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+	}
 
-        web3.eth.getAccounts(function(err, accounts){
-        	if (accounts.length == '') window.location = 'index.html';
-        });
+  web3.eth.net.isListening().then(ready => {
+    if (ready) {
+  		web3.eth.getAccounts()
+      .then (accounts=> {
+        console.log(accounts);
+        account = accounts[0];
+    		document.getElementById("user_eth_address").value = account;
+    		var accountInterval = setInterval(function() {
+    			if (web3.eth.accounts[0] !== account)
+    			{
+    				account = web3.eth.accounts[0];
+    				if(account)
+    				{
+    					web3.version.getNetwork((err, netId) => {
+    						if(netId == 1)
+    						{
+    							//window.location = 'index.html';
+    							document.getElementById("address").innerHTML = account;
+    							document.getElementById("borrower_eth_address").value = account;
+    						}
+    						else
+    						{
+    							window.location = 'index.html';
+    						}
+    					})
+    				}
+    				else
+    				{
+    					//window.location = 'index.html';
+    				}
+  			}
+  		}, 100);
 
-        baseTx.from= web3.eth.accounts[0];
+      web3.eth.getAccounts(function(err, accounts){
+      	if (accounts.length == '') window.location = 'index.html';
+      });
 
-        populate()
+      baseTx.from= web3.eth.accounts[0];
 
-      })} else {
-        console.log('Fell over :(');
-      }
+      populate()
 
-    });
+    })} else {
+      console.log('Fell over :(');
+    }
 
-
-
+  });
 };
+
+
+ function loadJSON(file,callback) {
+    var xobj = new XMLHttpRequest();
+    xobj.overrideMimeType("application/json");
+    xobj.open('GET', file, true); // Replace 'my_data' with the path to your file
+    xobj.onreadystatechange = function () {
+          if (xobj.readyState == 4 && xobj.status == "200") {
+            // Required use of an anonymous callback as .open will NOT return a value but simply returns undefined in asynchronous mode
+            callback(xobj.responseText);
+          }
+    };
+    xobj.send(null);
+ };
+
 
 function updateWithSuccess (speakerIndex, speakerName) {
   if (document.getElementById('speaker '+speakerIndex)) {
