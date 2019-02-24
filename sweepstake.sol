@@ -66,7 +66,6 @@ contract SpeakerPrediction {
 
         // What do we do with the one below ?
         /*
-        
         speakers.push(Speaker("Laurence Kirk",l));
         speakers.push(Speaker("Oprah Winfrey",l));        
         speakers.push(Speaker("Dan North",l));
@@ -75,9 +74,9 @@ contract SpeakerPrediction {
     }
 
     /// Add a new speaker
-    /// @param string       Name of the speaker to add
-    /// @dev                Require to be only the Contract owner or to pay a fee
-    /// @return uint256     Return the index of the speaker in the array
+    /// @param _speakerName string       Name of the speaker to add
+    /// @dev                            Require to be only the Contract owner or to pay a fee
+    /// @return uint256                 Return the index of the speaker in the array
     function addSpeaker (string memory _speakerName) public payable onlyOwnerUnlessFee returns (uint256) {  
         uint256[] memory l;
         speakers.push(Speaker(_speakerName,l));
@@ -154,7 +153,6 @@ contract SpeakerPrediction {
 
     /// Withdraw to Ethereum Address
     /// @dev implements mutex + set balance to 0 before to prevent re-entrancy attacks
-    ///
     function withdraw() public {
         require(!reEntrancyMutex);
         uint256 amount = pendingWithdrawals[msg.sender];
