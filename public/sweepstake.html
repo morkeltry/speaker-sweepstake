@@ -1,78 +1,185 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8">
-		<meta http-equiv="X-UA-Compatible" content="IE=edge">
-		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<title>The squeakety-geekery weekety-eight sweepety-speakery-sweepety-stake</title>
-		<meta name="description" content="Sweepstake betting page">
-	</head>
-	<body>
-		<div class="container-fluid">
-			<div class="row clearfix pt-10">
-				<div class="container bg-yellow" id="wrapper-content">
-					<div class="row clearfix">
-						<div class="col-md-8 col-md-offset-2 text-center logo">
-							<img src="./img/logo.png" class="center-block img-responsive">
-						</div>
-					</div>
-					<div class="row clearfix">
-						<div class="col-md-12 text-center">
-						<h1 class="font-green"><strong>SWEEEEP!</strong></h1>
-						</div>
-					</div>
-					<div class="row clearfix">
-						<div class="col-md-12 text-center">
-						<h3>Your Ethereum account is:</h3>
-						<h3 class="font-green"><strong id="address">
-										<input type="text" name="user_eth_address" id="user_eth_address"></strong></h3>
-						<p>&nbsp;</p>
-						<p>Our contract chairperson (probably Patrick McCorry) will call the payout function in week 8, when the identity of the speaker is public.</p>
-						<p>All funds received by this contract up until then will be shared between those who bet on the correct speaker</p>
-						<p>Winnings will be shared proportionally, so that </p>
-						<p>Your winnings will be repaid to THIS account.</p>
-						<p>Warning:</p>
-						<p>Blockchains cannot protect against all forms of cheating. That is a job for how humans choose to organise socially - Participants betting with insider knowledge will be publicly shamed!</p>
 
-						</div>
-						<div class="col-md-12">
-							<form action="/do_bet" method="post">
-								<div id="speakers" class="form-group row clearfix">
-									<div class="col-md-4 col-sm-6">
-										<label>Speakers</label>
-									</div>
-								</div>
-								<div class="form-group row clearfix">
-									<div class="col-md-4 col-sm-6">
-										<label>Amount staked (Finney / milliETH)</label>
-									</div>
-									<div class="col-md-8 col-sm-6">
-										<input  id="amount" type="text" class="form-control number-only" name="amount" placeholder="e.g. 25 Finney ~= £2.80">
-									</div>
-								</div>
-								<div class="form-group row clearfix">
-									<div class="col-md-4 col-sm-6">
-										<label>Your name / handle</label>
-									</div>
-									<div class="col-md-8 col-sm-6">
-										<input id="user" type="text" class="form-control" value="" name="user" placeholder="to whom should we make the ETH payable?">
-									</div>
-								</div>
-								<div class="form-group row clearfix">
-									<div class="col-md-12 col-sm-12 text-center">
-										<p>&nbsp;</p>
-										<button type="button" id="bet" class="btn btn-success btn-lg">PLACE YOUR BET</button>
-										<p>&nbsp;</p>
-									</div>
-								</div>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>The squeakety-geekery weekety-eight sweepety-speakery-sweepety-stake</title>
+	<meta name="description" content="Sweepstake betting page">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
 
-							</form>
-						</div>
-					</div>
+<body>
+
+<div class="container-fluid">
+	<div class="row justify-content-md-center">
+		<div class="container bg-yellow" id="wrapper-content">
+			
+			<div class="row self-align-center">	<!-- Header with logo and Ethereum address -->
+
+				<img class="col-md-2" width="10%" height="10%" src="./img/logo.png" class="rounded float-left" alt="...">
+				
+				<div class="col-md-8" style="text-align:center">
+					<div class="col-md-12 align-self-center">
+						<h1>Welcome to our Speaker SweepStake !</h1>
+						<h2>Your Ethereum account is:</h2>
+						<input class="form-control" type="text" name="user_eth_address" id="user_eth_address" readonly>
+					</div>		
 				</div>
+
+				<img class="col-md-2" width="10%" height="10%" src="./img/logo.png" class="rounded float-right" alt="...">
+
+			</div>
+
+
+			<div class="clearfix my-3">
+				
+				<div class="row">	<!-- Explanation of he SweepStake + Disclaimer -->
+					
+					<div class="col-md-6">
+						<div class="card mb-3">
+							<div class="card-header bg-info text-white "><h3>How does this SweepStake work ?</h3></div>
+							<div class="card-body">
+								<p class="card-text">Our contract chairperson (probably Patrick McCorry) will call the payout function in week 8, when the identity of the speaker is public.</p>
+								<p class="card-text">All funds received by this contract up until then will be shared between those who bet on the correct speaker</p>
+								<p class="card-text">Winnings will be shared proportionally, so that your winnings will be repaid to THIS account. </p>
+							</div>
+						</div>
+					</div>
+					
+					<div class="col-md-6">
+						<div class="card mb-3">
+							<div class="card-header bg-danger text-white "><h3>Warning ! Alert ! Be Aware !</h3></div>
+							<div class="card-body text-danger">
+								<p class="card-text" style="font-size:1.5rem;">Blockchains cannot protect against all forms of cheating. That is a job for how humans choose to organise socially - Participants betting with insider knowledge will be publicly shamed!</p>
+								<!-- Button trigger modal (to be implemented to display warning automatically -->
+								<!-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">Launch demo modal </button> -->
+							</div>
+						</div>
+					</div>
+
+				</div>
+
+				<form action="/do_bet" method="post" class="my-3">	
+
+					<div class="row justify-content-center">	<!-- Voting form inputs -->
+
+						<div class="form-group col-md-6">
+							<label class="mb-2" for="amount">Amount Staked</label>
+							<div class="input-group mb-2 mr-sm-2">
+								<div class="input-group-prepend">
+									<div class="input-group-text">Finney / milliETH (♦)</div>
+								</div>
+								<input type="number" class="form-control number-only" id="amount" placeholder="e.g. 25 Finney ~= £2.80">
+							</div>
+						</div>
+						
+						<div class="form-group col-md-6">
+							<label class="mb-2" for="user">Your Name</label>
+							<div class="input-group mb-2 mr-sm-2">
+								<div class="input-group-prepend">
+									<div class="input-group-text">Name</div>
+								</div>
+								<input id="user" type="text" class="form-control" value="" name="user" placeholder="Enter your name">
+							</div>
+						</div>
+
+					</div>
+
+					<div class="row justify-content-center">
+
+						<div class="form-group col-md-4">
+							<button type="button" id="bet" class="btn btn-success btn-lg btn-block">Place Your Bet</button>
+						</div>
+							
+					</div>
+
+						
+					<div class="row">	
+
+						<div class="form-group col-md-12">
+							<div id="speakers">
+								<div class="">
+									<label>Speakers</label>
+								</div>
+							</div>
+						</div>
+
+					</div>
+
+					<div class="row">	<!-- Cards with Speaker radio buttons to vote for + nb of votes collected -->
+
+						<div class="card-group">
+							<div class="card">
+								<img class="card-img-top" src="./img/vitalik-buterin.jpg" alt="Card image cap">
+								<div class="card-body">
+								<h3 class="card-title">Vitalik Buterin</h3>
+								<p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce eget auctor mauris. Aenean non risus ligula. Aliquam aliquam arcu mauris, a venenatis felis sagittis quis. Phasellus at dui accumsan, eleifend justo quis, semper neque. </p>
+								</div>
+								<div class="card-footer">
+									<div class="row">
+										<div class="col-6">
+											<h4>Add a vote</h4>
+											<input class="form-control" type="radio" name="speaker" value="">
+										</div>
+										<div class="col-6">
+											<small class="text-muted">Current nb of votes:  </small>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="card">
+								<img class="card-img-top" src="./img/satoshi-nakamoto.jpg" alt="Card image cap">
+								<div class="card-body">
+								<h3 class="card-title">Satoshi Nakamoto</h3>
+								<p class="card-text">I'm looking for a fixer-upper with a solid foundation. Am willing to tear down walls, build bridges, and light fires. I have great experience, lots of energy, a bit of that "vision thing" and I'm not afraid to start from the beginning.</p>
+								</div>
+								<div class="card-footer">
+									<div class="row">
+										<div class="col-6">
+											<h4>Add a vote</h4>
+											<input class="form-control" type="radio" name="speaker" value="">
+										</div>
+										<div class="col-6">
+											<small class="text-muted">Current nb of votes:  </small>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="card">
+								<img class="card-img-top" src="./img/nick-johnson.jpg" alt="Card image cap">
+								<div class="card-body">
+								<h3 class="card-title">Nick Johnson</h3>
+								<p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce eget auctor mauris. Aenean non risus ligula. Aliquam aliquam arcu mauris, a venenatis felis sagittis quis. Phasellus at dui accumsan, eleifend justo quis, semper neque. </p>
+								</div>
+								<div class="card-footer text-center">
+									<div class="row">
+										<div class="col-6">
+											<h4>Add a vote</h4>
+											<input class="form-control" type="radio" name="speaker" value="">
+										</div>
+										<div class="col-6">
+											<small class="text-muted">Current nb of votes:  </small>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+					</div>
+
+				</form>
+				
 			</div>
 		</div>
-		<script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js/dist/web3.min.js"></script>
-		<script src="./scripts.js"></script>
-	</body>
+	</div>
+</div>
+
+	
+<script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js/dist/web3.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E=" crossorigin="anonymous"></script>
+<script src="./scripts.js"></script>
+</body>
+
 </html>
