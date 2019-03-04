@@ -1,5 +1,10 @@
-pragma solidity >=0.5.4 <0.6.0;
+pragma solidity >=0.5.1 <0.6.0;
 contract SpeakerPrediction {
+
+    enum Status { OFF, ON }
+    Status public status;
+    
+    uint internal start_time;
 
     struct Speaker {
       string name;
@@ -10,11 +15,11 @@ contract SpeakerPrediction {
       string name;
       address payable payoutAddress;
       uint256 betAmount;
-      // required to prevent constant payments to
-      bool paidOut;
+      bool paidOut;     // required to prevent constant payments to...
     }
 
-    // Initialise the mutex to lock contract during execution of withdraw function
+    // Initialise mutex
+    // |-> Lock contract during execution of withdraw function
     bool reEntrancyMutex = false;
 
     Speaker[] speakers;
@@ -22,11 +27,25 @@ contract SpeakerPrediction {
     mapping (uint256 => Voter) allVotes;
     uint256 nextEmptyVote = 0;
     address owner;
+
+
+    modifier Active {
+        require( status == Status.ON, "The SweepStake has not started yet");
+        _;
+    }
+
+
+    modifier Inactive {
+        require( status == Status.OFF, "This SweepStake is finished");
+        _;
+    }
   
+
     modifier onlyOwner {
         require(owner == msg.sender, "Screw you hacker!");
         _;
     }
+
 
     modifier onlyOwnerUnlessFee {
         // require a fee to raise the cost of array-spamming gas exhaustion attack.
@@ -34,8 +53,12 @@ contract SpeakerPrediction {
         _;
     }
 
+
+    /// Main constructor
+    /// @dev instantiate the array with several speakers
     constructor() public {
         owner = msg.sender;
+        status = Status.OFF;
         // Set an initial list of speakers when contract is deployed
         uint256[] memory l;
         speakers.push(Speaker("Satoshi Nakamoto",l));
@@ -62,35 +85,66 @@ contract SpeakerPrediction {
         speakers.push(Speaker("Virgil Griffith",l));
         speakers.push(Speaker("Zach Lebeau",l));
         speakers.push(Speaker("Anthony Di Lorio",l));
-        speakers.push(Speaker("Charles Hoskinson",l));     
-
-        // What do we do with the one below ?
-        /*
-        speakers.push(Speaker("Laurence Kirk",l));
-        speakers.push(Speaker("Oprah Winfrey",l));        
-        speakers.push(Speaker("Dan North",l));
-        speakers.push(Speaker("William H. Gates",l));
-        */
+        speakers.push(Speaker("Charles Hoskinson",l));
     }
 
+
+    function getSweepstakeStatus() public view returns (string memory) {
+        if (Status.ON == status) return "Sweepstake ongoing, place your votes !";
+        if (Status.OFF == status) {
+            if (start_time == 0) {
+                return "Sweepstake hasn't started yet.";
+            } else {
+                return "Sweepstake ended.";
+            }
+        }
+    }
+
+    /// Initiate the SweepStake
+    /// @dev                       Only the contract's creator
+    function startSweepstake() public payable onlyOwner Inactive returns (bool) {
+        status = Status.ON;
+        start_time = now;
+        return true;
+    }
+
+    /// Stop the SweepStake
+    /// @dev                       Only the contract's creator
+    function endSweepstake() public payable onlyOwner Active returns (bool) {
+        status = Status.OFF;
+        return true;
+    }
+
+
     /// Add a new speaker
-    /// @param _speakerName string       Name of the speaker to add
-    /// @dev                            Require to be only the Contract owner or to pay a fee
-    /// @return uint256                 Return the index of the speaker in the array
-    function addSpeaker (string memory _speakerName) public payable onlyOwnerUnlessFee returns (uint256) {  
+    /// @param _speakerName        Name of the speaker to add
+    /// @dev                       Require to be only the Contract owner or to pay a fee
+    /// @return uint256            Return the index of the speaker in the array
+    function addSpeaker (string memory _speakerName) public payable Active onlyOwnerUnlessFee returns (uint256) {  
         uint256[] memory l;
         speakers.push(Speaker(_speakerName,l));
         return (speakers.length-1);
     }
 
+
+    /// Get Total number of speakers available to vote for
+    /// @return uint256            Total number of speakers
     function speakersLength () public view returns (uint256) {
         return (speakers.length);
     }
 
+
+    /// Get the name of a specific speaker
+    /// @param speakerIndex        The index of the speaker in the array
+    /// @return string             The name of the speaker
     function speakerNameAt (uint256 speakerIndex) public view returns (string memory) {
         return (speakers[speakerIndex].name);
     }
 
+
+    /// Get the total balance available for a speaker
+    /// @param speakerIndex        The index of a specific speaker in the array
+    /// @return uint256            The amount staked in total by all speaker's voters
     function speakerBalanceAt (uint256 speakerIndex) public view returns (uint256) {
         uint256 i= speakers[speakerIndex].votes.length;
         uint256 total= 0;
@@ -100,8 +154,13 @@ contract SpeakerPrediction {
         return (total);
     }
 
-    function playOurGame (uint256 speakerIndex, string memory voterName) public payable {
-        require(speakerIndex < speakers.length,"Speaker unknown");
+
+    /// Place a bet on a Speaker
+    /// @dev                       Payable, requires to pay money for it
+    /// @param speakerIndex        The index of the speaker to vote for
+    /// @param voterName           Voter's name (included in the struct)
+    function playOurGame (uint256 speakerIndex, string memory voterName) public payable Active {
+        require(speakerIndex < speakers.length, "Speaker unknown");
         Voter memory _voter;
         _voter.name = voterName;
         _voter.payoutAddress = msg.sender;
@@ -112,16 +171,20 @@ contract SpeakerPrediction {
         nextEmptyVote++;
     }
 
-    function doPayouts(uint256 speakerIndex) onlyOwner public returns (uint256) {
+
+    /// Make the payouts
+    /// @param speakerIndex        The index of the speaker
+    /// @return uint256                
+    function doPayouts(uint256 speakerIndex) public onlyOwner Inactive returns (uint256) {
         uint256 thisBalance = address(this).balance;
         uint256 payout = 0;
         uint256 len = speakers[speakerIndex].votes.length;
-        // calculate total betAmount in winning pool
-        uint256 totalPaid = 0;
+        uint256 totalPaid = 0;      // calculate total betAmount in winning pool
         uint256 i = nextEmptyVote;
+
         while (i-- > 0) {
             totalPaid += allVotes[i].betAmount;
-            // if nobody voted for the winning speaker, iterat4e over all bets and pay back
+            // if nobody voted for the winning speaker, iterate over all bets and pay back
             if (len==0) {
                 if (!allVotes[i].paidOut) {
                     payout = allVotes[i].betAmount;
@@ -132,8 +195,7 @@ contract SpeakerPrediction {
             }
         }
 
-        // calculate and transfer amount to winner's pot
-        if(len > 0){
+        if(len > 0){        // calculate and transfer amount to winner's pot
             for(uint i = 0; i < len ; i++){
                 uint256 _vote = speakers[speakerIndex].votes[i];
                 // check if paid here;
@@ -153,7 +215,7 @@ contract SpeakerPrediction {
 
     /// Withdraw to Ethereum Address
     /// @dev implements mutex + set balance to 0 before to prevent re-entrancy attacks
-    function withdraw() public {
+    function withdraw() public Inactive {
         require(!reEntrancyMutex);
         uint256 amount = pendingWithdrawals[msg.sender];
         // Remember to zero the pending refund before
