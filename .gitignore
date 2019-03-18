@@ -59,6 +59,7 @@ typings/
 
 # secrets text file
 secrets
+secrets.json
 
 # next.js build output
 .next
