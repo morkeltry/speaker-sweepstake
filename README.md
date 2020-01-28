@@ -1,6 +1,8 @@
 # speaker-sweepstake
 Ether sweepstake on the identity of the week8 speaker for the cyptocurrencies MSc-level.
 
+(spoiler - the speaker was none of these! )
+
 Based on simple smart contract, something like:
 
 ```
